@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Suhas Vanamore — AI-enabled pharma operations transformation, business performance, data analytics, GenAI value realization, and operational excellence." />
+<title>Suhas Vanamore — AI & Business Transformation Leader</title>
+<style>
+  :root{
+    --bg:#f5f5f7;
+    --surface:rgba(255,255,255,.78);
+    --surface-solid:#ffffff;
+    --text:#1d1d1f;
+    --muted:#6e6e73;
+    --line:rgba(0,0,0,.08);
+    --accent:#0071e3;
+    --accent-2:#5e5ce6;
+    --shadow:0 20px 60px rgba(0,0,0,.08);
+    --radius-xl:34px;
+    --radius-lg:24px;
+    --radius-md:18px;
+    --max:1180px;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Inter,Helvetica,Arial,sans-serif;
+    background:
+      radial-gradient(circle at 15% -10%, rgba(0,113,227,.13), transparent 28%),
+      radial-gradient(circle at 90% 0%, rgba(94,92,230,.10), transparent 25%),
+      var(--bg);
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+
+  a{color:inherit;text-decoration:none}
+  button{font:inherit}
+
+  .nav{
+    position:sticky; top:0; z-index:50;
+    backdrop-filter:saturate(180%) blur(22px);
+    -webkit-backdrop-filter:saturate(180%) blur(22px);
+    background:rgba(245,245,247,.78);
+    border-bottom:1px solid rgba(0,0,0,.06);
+  }
+  .nav-inner{
+    max-width:var(--max);
+    margin:auto;
+    height:62px;
+    padding:0 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+  }
+  .brand{font-weight:700; letter-spacing:-.02em}
+  .nav-links{display:flex; gap:24px; align-items:center; color:var(--muted); font-size:14px}
+  .nav-links a:hover{color:var(--text)}
+  .nav-cta{
+    padding:9px 14px;
+    background:var(--text);
+    color:#fff;
+    border-radius:999px;
+    font-weight:600;
+  }
+
+  main{overflow:hidden}
+  .wrap{max-width:var(--max); margin:auto; padding:0 24px}
+
+  .hero{
+    padding:92px 0 72px;
+    display:grid;
+    grid-template-columns:1.25fr .75fr;
+    gap:56px;
+    align-items:center;
+  }
+  .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+    padding:8px 12px;
+    border:1px solid var(--line);
+    border-radius:999px;
+    background:rgba(255,255,255,.6);
+    color:#3a3a3c;
+    font-size:13px;
+    font-weight:600;
+  }
+  .eyebrow i{
+    width:8px;height:8px;border-radius:50%;
+    background:#34c759;
+    box-shadow:0 0 0 4px rgba(52,199,89,.12);
+  }
+  h1{
+    font-size:clamp(50px,7vw,88px);
+    line-height:.96;
+    letter-spacing:-.055em;
+    margin:24px 0 22px;
+    max-width:900px;
+  }
+  .gradient{
+    background:linear-gradient(120deg,#111 20%,#0071e3 58%,#5e5ce6);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .hero-copy{
+    font-size:clamp(19px,2.2vw,25px);
+    line-height:1.38;
+    color:var(--muted);
+    max-width:820px;
+    letter-spacing:-.018em;
+  }
+  .hero-actions{display:flex; gap:12px; flex-wrap:wrap; margin-top:30px}
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:9px;
+    padding:13px 18px; border-radius:999px;
+    border:1px solid var(--line);
+    background:var(--surface-solid);
+    font-weight:650;
+    transition:.22s ease;
+  }
+  .btn:hover{transform:translateY(-2px); box-shadow:0 10px 30px rgba(0,0,0,.08)}
+  .btn.primary{background:var(--accent); color:#fff; border-color:transparent}
+
+  .hero-card{
+    position:relative;
+    min-height:400px;
+    background:linear-gradient(145deg,#0d1117 0%,#151a23 60%,#111827 100%);
+    border-radius:var(--radius-xl);
+    padding:28px;
+    color:#fff;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .orb{
+    position:absolute; width:240px;height:240px;border-radius:50%;
+    filter:blur(12px); opacity:.68;
+    background:radial-gradient(circle at 35% 35%,#4cc9f0 0%,#4361ee 48%,transparent 68%);
+    right:-70px; top:-55px;
+  }
+  .orb.two{
+    width:210px;height:210px; right:auto; top:auto; left:-80px; bottom:-70px;
+    background:radial-gradient(circle at 50% 50%,#8b5cf6 0%,#4f46e5 45%,transparent 68%);
+  }
+  .profile-mark{
+    width:76px;height:76px;border-radius:22px;
+    background:linear-gradient(135deg,#fff,#dfe7ff);
+    color:#111;
+    display:grid;place-items:center;
+    font-size:30px;font-weight:800;
+    position:relative;z-index:1;
+  }
+  .hero-card h3{font-size:26px;margin:22px 0 8px;position:relative;z-index:1;letter-spacing:-.03em}
+  .hero-card p{color:rgba(255,255,255,.68);line-height:1.55;position:relative;z-index:1}
+  .mini-stats{
+    position:absolute; left:28px; right:28px; bottom:28px;
+    display:grid; grid-template-columns:repeat(3,1fr); gap:10px; z-index:1;
+  }
+  .mini-stat{
+    padding:16px 14px;
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.09);
+    backdrop-filter:blur(14px);
+    border-radius:18px;
+  }
+  .mini-stat strong{display:block;font-size:25px;letter-spacing:-.03em}
+  .mini-stat span{font-size:12px;color:rgba(255,255,255,.62)}
+
+  section{padding:70px 0}
+  .section-head{
+    display:grid;
+    grid-template-columns:.7fr 1.3fr;
+    gap:36px;
+    margin-bottom:34px;
+  }
+  .kicker{font-size:14px; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); font-weight:700}
+  .section-head h2{
+    font-size:clamp(36px,5vw,62px);
+    line-height:1.02;
+    letter-spacing:-.045em;
+    margin:0;
+  }
+
+  .metrics{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+  }
+  .metric{
+    background:var(--surface-solid);
+    border-radius:var(--radius-lg);
+    padding:26px;
+    min-height:180px;
+    box-shadow:0 1px 0 rgba(0,0,0,.02);
+    border:1px solid rgba(0,0,0,.05);
+  }
+  .metric strong{display:block;font-size:42px;letter-spacing:-.045em;margin-bottom:10px}
+  .metric span{color:var(--muted);line-height:1.45}
+
+  .about-card{
+    background:linear-gradient(180deg,#fff,rgba(255,255,255,.8));
+    border:1px solid rgba(0,0,0,.05);
+    border-radius:var(--radius-xl);
+    padding:42px;
+    box-shadow:var(--shadow);
+  }
+  .about-card p{
+    margin:0;
+    font-size:clamp(20px,2.35vw,29px);
+    line-height:1.48;
+    letter-spacing:-.025em;
+    color:#343436;
+  }
+
+  .timeline{display:grid; gap:16px}
+  .role{
+    display:grid;
+    grid-template-columns:230px 1fr;
+    gap:28px;
+    background:var(--surface-solid);
+    border:1px solid rgba(0,0,0,.05);
+    border-radius:var(--radius-lg);
+    padding:28px;
+    transition:.25s ease;
+  }
+  .role:hover{transform:translateY(-2px); box-shadow:0 14px 38px rgba(0,0,0,.06)}
+  .role time{color:var(--muted);font-size:14px;line-height:1.45}
+  .role h3{font-size:24px;letter-spacing:-.025em;margin:0 0 4px}
+  .role .company{font-weight:700;color:#444;margin-bottom:12px}
+  .role p{color:var(--muted);line-height:1.6;margin:0}
+  .role ul{padding-left:18px;color:var(--muted);line-height:1.55;margin:12px 0 0}
+  .role li+li{margin-top:5px}
+
+  .skills-grid{
+    display:grid;
+    grid-template-columns:1.1fr .9fr;
+    gap:16px;
+  }
+  .skill-card{
+    background:var(--surface-solid);
+    border:1px solid rgba(0,0,0,.05);
+    border-radius:var(--radius-xl);
+    padding:32px;
+  }
+  .skill-card h3{font-size:26px;margin:0 0 18px;letter-spacing:-.03em}
+  .chips{display:flex;flex-wrap:wrap;gap:10px}
+  .chip{
+    padding:10px 13px;
+    background:#f1f1f3;
+    border-radius:999px;
+    font-size:14px;
+    color:#3d3d40;
+  }
+
+  .education-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:16px;
+  }
+  .edu{
+    background:var(--surface-solid);
+    border:1px solid rgba(0,0,0,.05);
+    border-radius:var(--radius-lg);
+    padding:26px;
+  }
+  .edu h3{margin:0 0 6px;font-size:21px;letter-spacing:-.02em}
+  .edu p{margin:0;color:var(--muted);line-height:1.5}
+  .tag{display:inline-block;margin-top:14px;font-size:12px;font-weight:700;color:var(--accent)}
+
+  .contact-panel{
+    background:#111;
+    color:#fff;
+    border-radius:var(--radius-xl);
+    padding:52px;
+    position:relative;
+    overflow:hidden;
+  }
+  .contact-panel:after{
+    content:"";
+    position:absolute; inset:auto -10% -50% 40%;
+    height:340px;
+    background:radial-gradient(circle,#0071e3 0%,rgba(0,113,227,0) 70%);
+    opacity:.5;
+  }
+  .contact-panel h2{font-size:clamp(38px,5vw,66px);line-height:1.02;letter-spacing:-.045em;margin:0 0 18px;max-width:760px;position:relative;z-index:1}
+  .contact-panel p{color:rgba(255,255,255,.66);font-size:18px;line-height:1.5;position:relative;z-index:1;max-width:720px}
+  .contact-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px;position:relative;z-index:1}
+  .contact-panel .btn{background:#fff;color:#111;border:none}
+  .contact-panel .btn.secondary{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.12)}
+
+  footer{
+    padding:34px 0 48px;
+    color:var(--muted);
+    font-size:13px;
+  }
+  .footer-row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+  .reveal{opacity:0; transform:translateY(18px); transition:opacity .7s ease, transform .7s ease}
+  .reveal.visible{opacity:1; transform:none}
+
+  @media (max-width: 900px){
+    .hero{grid-template-columns:1fr;padding-top:64px}
+    .hero-card{min-height:360px}
+    .section-head{grid-template-columns:1fr}
+    .metrics{grid-template-columns:repeat(2,1fr)}
+    .role{grid-template-columns:1fr}
+    .skills-grid{grid-template-columns:1fr}
+  }
+  @media (max-width: 640px){
+    .nav-links a:not(.nav-cta){display:none}
+    .hero{padding:48px 0 52px}
+    h1{font-size:51px}
+    .hero-card{min-height:390px}
+    .mini-stats{grid-template-columns:1fr}
+    .mini-stat{display:flex;align-items:center;justify-content:space-between}
+    .metrics{grid-template-columns:1fr}
+    section{padding:52px 0}
+    .about-card,.skill-card,.contact-panel{padding:28px}
+    .education-grid{grid-template-columns:1fr}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{scroll-behavior:auto!important;transition:none!important}
+    .reveal{opacity:1;transform:none}
+  }
+</style>
+</head>
+
+<body>
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#top" class="brand">Suhas Vanamore</a>
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#experience">Experience</a>
+      <a href="#expertise">Expertise</a>
+      <a href="#education">Education</a>
+      <a class="nav-cta" href="#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+  <div class="wrap">
+    <section class="hero">
+      <div>
+        <div class="eyebrow reveal"><i></i> Hyderabad · AI & Business Transformation</div>
+        <h1 class="reveal">Turning <span class="gradient">AI, data & operations</span> into measurable business value.</h1>
+        <p class="hero-copy reveal">
+          Transformation and business performance leader with 13+ years across pharmaceutical operations,
+          Operational Excellence, analytics, business intelligence and AI-enabled transformation.
+        </p>
+        <div class="hero-actions reveal">
+          <a class="btn primary" href="#experience">View experience</a>
+          <a class="btn" href="mailto:suhasvanamore@gmail.com">Email me</a>
+          <a class="btn" href="https://www.linkedin.com/in/suhas-vanamore-asq-black-belt-pmp%C2%AE-2157b835" target="_blank" rel="noopener">LinkedIn ↗</a>
+        </div>
+      </div>
+
+      <aside class="hero-card reveal" aria-label="Professional snapshot">
+        <div class="orb"></div><div class="orb two"></div>
+        <div class="profile-mark">SV</div>
+        <h3>AI-Enabled Pharma Operations Transformation</h3>
+        <p>Business performance · GenAI value realization · data analytics · operational excellence</p>
+        <div class="mini-stats">
+          <div class="mini-stat"><strong>13+</strong><span>Years experience</span></div>
+          <div class="mini-stat"><strong>₹12Cr+</strong><span>Quantified value</span></div>
+          <div class="mini-stat"><strong>6</strong><span>Major pharma organizations</span></div>
+        </div>
+      </aside>
+    </section>
+
+    <section aria-label="Highlights">
+      <div class="metrics">
+        <div class="metric reveal"><strong>AI</strong><span>Enterprise GenAI adoption, productivity measurement and value-realization frameworks.</span></div>
+        <div class="metric reveal"><strong>LSS</strong><span>Lean Six Sigma leadership across quality, manufacturing and operational performance.</span></div>
+        <div class="metric reveal"><strong>BI</strong><span>Executive dashboards, KPI design, reporting automation and decision intelligence.</span></div>
+        <div class="metric reveal"><strong>ML</strong><span>Advanced analytics, predictive modelling and machine-learning-enabled problem solving.</span></div>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="section-head">
+        <div class="kicker reveal">About</div>
+        <h2 class="reveal">Strategy, people, process, data and technology — connected.</h2>
+      </div>
+      <div class="about-card reveal">
+        <p>
+          I help pharmaceutical organizations translate strategy into measurable outcomes. My work spans
+          AI-enabled productivity, Operational Excellence, Lean Six Sigma, business analytics, executive
+          performance management and digital transformation. I focus on building solutions that are not only
+          analytically strong, but adoptable, scalable and tied to clear business value.
+        </p>
+      </div>
+    </section>
+
+    <section id="experience">
+      <div class="section-head">
+        <div class="kicker reveal">Experience</div>
+        <h2 class="reveal">A career built around measurable transformation.</h2>
+      </div>
+
+      <div class="timeline">
+        <article class="role reveal">
+          <time>Jan 2025 — Present<br>Hyderabad</time>
+          <div>
+            <h3>Productivity Metrics & Analytics Manager</h3>
+            <div class="company">Amgen India</div>
+            <p>Lead AI-enabled productivity and business performance initiatives supporting enterprise digital transformation and GenAI adoption.</p>
+            <ul>
+              <li>Develop performance frameworks for GenAI adoption, productivity improvement, cost optimization and business value realization.</li>
+              <li>Design executive dashboards and business intelligence solutions for leadership decision-making.</li>
+              <li>Translate business challenges into scalable analytics and AI-enabled solutions with Digital Productivity, Technology and Operations leaders.</li>
+              <li>Evaluate AI product opportunities, define success metrics and support enterprise adoption.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="role reveal">
+          <time>May 2023 — Jan 2025<br>Hyderabad</time>
+          <div>
+            <h3>Operational Excellence Quality Lead</h3>
+            <div class="company">Dr. Reddy’s Laboratories</div>
+            <p>Applied Lean Six Sigma, machine learning and advanced analytics to improve productivity, quality and product resilience, including QC capacity planning and performance strategy.</p>
+          </div>
+        </article>
+
+        <article class="role reveal">
+          <time>Feb 2020 — May 2023<br>Nagpur</time>
+          <div>
+            <h3>Operational Excellence Lead</h3>
+            <div class="company">Lupin</div>
+            <p>Drove Continuous Improvement across quality, delivery and productivity, including Six Sigma capability building, advanced analytics, ML and digital transformation.</p>
+            <ul>
+              <li>Delivered 2+ Cr in savings through Lean Six Sigma improvement.</li>
+              <li>Led a Six Sigma molecule program using advanced analytics and ML to support zero batch failure and stronger product robustness.</li>
+              <li>Led World-Class Laboratory and Manufacturing improvement efforts, including OEE and 5S.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="role reveal">
+          <time>Sep 2018 — Feb 2020<br>Indore</time>
+          <div>
+            <h3>Manager — Operational Excellence (SFTI)</h3>
+            <div class="company">Piramal Pharma Solutions</div>
+            <p>Led shop-floor transformation, DMAIC-based problem solving, capability development and data-driven improvement; delivered savings exceeding 2 Cr.</p>
+          </div>
+        </article>
+
+        <article class="role reveal">
+          <time>Aug 2016 — Aug 2018<br>Visakhapatnam</time>
+          <div>
+            <h3>Assistant Manager, Operational Excellence</h3>
+            <div class="company">Dr. Reddy’s Laboratories</div>
+            <p>Facilitated OE/CI projects, data acquisition and analysis, root-cause problem solving, gemba, 5S, Kaizen, visual management and Lean Daily Management.</p>
+          </div>
+        </article>
+
+        <article class="role reveal">
+          <time>Feb 2016 — Aug 2016</time>
+          <div>
+            <h3>Industrial Engineering & OPEX Executive</h3>
+            <div class="company">Sun Pharma</div>
+            <p>Worked across Industrial Engineering, OPEX, Lean Six Sigma and process development.</p>
+          </div>
+        </article>
+
+        <article class="role reveal">
+          <time>Jan 2013 — Feb 2016</time>
+          <div>
+            <h3>Operational Excellence Officer</h3>
+            <div class="company">Mylan</div>
+            <p>Progressed from OE Trainee to interim OE lead, driving Lean Six Sigma projects in yield, cycle time and changeover reduction with approximately 3 Cr in savings.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="expertise">
+      <div class="section-head">
+        <div class="kicker reveal">Expertise</div>
+        <h2 class="reveal">Business transformation with a strong analytical core.</h2>
+      </div>
+
+      <div class="skills-grid">
+        <div class="skill-card reveal">
+          <h3>Core capabilities</h3>
+          <div class="chips">
+            <span class="chip">Generative AI</span>
+            <span class="chip">Artificial Intelligence</span>
+            <span class="chip">Business Analytics</span>
+            <span class="chip">Business Intelligence</span>
+            <span class="chip">Lean Six Sigma</span>
+            <span class="chip">Operational Excellence</span>
+            <span class="chip">DMAIC</span>
+            <span class="chip">Value Stream Mapping</span>
+            <span class="chip">Hoshin Kanri</span>
+            <span class="chip">Balanced Scorecard</span>
+            <span class="chip">Theory of Constraints</span>
+            <span class="chip">TPM</span>
+            <span class="chip">5S</span>
+            <span class="chip">Machine Learning</span>
+            <span class="chip">Predictive Modelling</span>
+            <span class="chip">Design of Experiments</span>
+            <span class="chip">Capacity Planning</span>
+          </div>
+        </div>
+
+        <div class="skill-card reveal">
+          <h3>Credentials</h3>
+          <div class="chips">
+            <span class="chip">ASQ Lean Six Sigma Black Belt</span>
+            <span class="chip">PMP®</span>
+            <span class="chip">Certified SAFe® Practitioner</span>
+            <span class="chip">Advanced Certification in Data Science & AI</span>
+            <span class="chip">Project Management Green Belt</span>
+          </div>
+          <h3 style="margin-top:28px">Languages</h3>
+          <div class="chips">
+            <span class="chip">English</span>
+            <span class="chip">Hindi</span>
+            <span class="chip">Marathi</span>
+            <span class="chip">Kannada</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="education">
+      <div class="section-head">
+        <div class="kicker reveal">Education</div>
+        <h2 class="reveal">A foundation across pharmacy, analytics and management.</h2>
+      </div>
+
+      <div class="education-grid">
+        <div class="edu reveal">
+          <h3>Indian Institute of Technology, Madras (Pravartak)</h3>
+          <p>Advanced Certification in Data Science and Artificial Intelligence.</p>
+          <span class="tag">DATA · AI · ANALYTICS</span>
+        </div>
+        <div class="edu reveal">
+          <h3>Indian Institute of Management, Calcutta</h3>
+          <p>Advanced Program in Supply Chain Management.</p>
+          <span class="tag">SUPPLY CHAIN</span>
+        </div>
+        <div class="edu reveal">
+          <h3>Dr. Babasaheb Ambedkar Marathwada University</h3>
+          <p>Master of Pharmacy, Pharmaceutical Sciences.</p>
+          <span class="tag">PHARMACEUTICAL SCIENCES</span>
+        </div>
+        <div class="edu reveal">
+          <h3>M.M. College of Pharmacy, Pune</h3>
+          <p>Pharmacy.</p>
+          <span class="tag">PHARMACY</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="contact-panel reveal">
+        <h2>Let’s build transformation that people can measure — and feel.</h2>
+        <p>
+          Open to conversations around AI-enabled transformation, business performance,
+          GenAI value realization, analytics, operational excellence and pharma digital productivity.
+        </p>
+        <div class="contact-actions">
+          <a class="btn" href="mailto:suhasvanamore@gmail.com">suhasvanamore@gmail.com</a>
+          <a class="btn secondary" href="https://www.linkedin.com/in/suhas-vanamore-asq-black-belt-pmp%C2%AE-2157b835" target="_blank" rel="noopener">Connect on LinkedIn ↗</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap footer-row">
+    <div>© <span id="year"></span> Suhas Vanamore</div>
+    <div>Designed as a single-file responsive portfolio.</div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
