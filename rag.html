@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An interactive, offline simulator for learning every stage of Retrieval-Augmented Generation.">
+  <title>RAG Learning Lab</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2307121f'/%3E%3Cpath d='M16 18h23a9 9 0 0 1 0 18H26' fill='none' stroke='%233de0b5' stroke-width='6' stroke-linecap='round'/%3E%3Cpath d='m29 29-9 9 9 9' fill='none' stroke='%2379a7ff' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #06101b;
+      --panel: #0b1928;
+      --panel-2: #102235;
+      --panel-3: #142b42;
+      --text: #edf6ff;
+      --muted: #9eb2c8;
+      --dim: #70869d;
+      --line: rgba(163, 194, 224, .16);
+      --cyan: #63d8ff;
+      --mint: #3de0b5;
+      --blue: #79a7ff;
+      --amber: #ffca70;
+      --rose: #ff809d;
+      --radius: 18px;
+      --shadow: 0 20px 60px rgba(0, 0, 0, .28);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 12% 8%, rgba(99,216,255,.11), transparent 28rem),
+        radial-gradient(circle at 90% 26%, rgba(61,224,181,.08), transparent 32rem),
+        var(--bg);
+      color: var(--text);
+      font: 16px/1.5 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    button, textarea, input, select { font: inherit; }
+    button { color: inherit; }
+    button:focus-visible, textarea:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 3px solid rgba(99,216,255,.34);
+      outline-offset: 2px;
+    }
+
+    .shell { width: min(1520px, calc(100% - 32px)); margin: 0 auto; padding: 22px 0 44px; }
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between; gap: 20px;
+      padding: 5px 2px 20px;
+    }
+    .brand { display: flex; align-items: center; gap: 13px; }
+    .brand-mark {
+      width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center;
+      background: linear-gradient(145deg, rgba(99,216,255,.2), rgba(61,224,181,.12));
+      border: 1px solid rgba(99,216,255,.25); box-shadow: inset 0 1px rgba(255,255,255,.08);
+    }
+    .brand-mark svg { width: 25px; height: 25px; }
+    .brand h1 { font-size: 1.08rem; margin: 0; letter-spacing: -.01em; }
+    .brand p { color: var(--muted); margin: 1px 0 0; font-size: .82rem; }
+    .top-actions { display: flex; gap: 10px; align-items: center; }
+
+    .btn {
+      border: 1px solid var(--line); border-radius: 11px; background: var(--panel-2);
+      min-height: 42px; padding: 9px 14px; cursor: pointer; transition: .2s ease;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700;
+    }
+    .btn:hover { transform: translateY(-1px); border-color: rgba(99,216,255,.35); background: #142a3f; }
+    .btn.primary { color: #031719; background: linear-gradient(135deg, var(--mint), var(--cyan)); border-color: transparent; }
+    .btn.primary:hover { filter: brightness(1.05); }
+    .btn.ghost { background: transparent; }
+    .btn.small { min-height: 36px; padding: 7px 11px; font-size: .86rem; }
+    .btn[disabled] { opacity: .45; cursor: not-allowed; transform: none; }
+
+    .progress-wrap {
+      display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center;
+      margin-bottom: 15px; color: var(--muted); font-size: .84rem;
+    }
+    .progress-track { height: 6px; border-radius: 99px; overflow: hidden; background: rgba(255,255,255,.07); }
+    .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--blue), var(--mint)); transition: width .5s ease; }
+
+    .app-grid { display: grid; grid-template-columns: 270px minmax(0,1fr); gap: 16px; align-items: start; }
+    .sidebar, .workspace { border: 1px solid var(--line); background: rgba(9, 23, 37, .88); box-shadow: var(--shadow); }
+    .sidebar { border-radius: var(--radius); padding: 14px; position: sticky; top: 16px; }
+    .side-label { color: var(--dim); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; font-weight: 800; padding: 4px 8px 10px; }
+    .steps { display: grid; gap: 5px; }
+    .step {
+      width: 100%; border: 1px solid transparent; background: transparent; border-radius: 12px;
+      padding: 10px; display: grid; grid-template-columns: 31px 1fr auto; gap: 10px; align-items: center;
+      text-align: left; cursor: pointer; color: var(--muted); transition: .2s ease;
+    }
+    .step:hover { background: rgba(255,255,255,.035); color: var(--text); }
+    .step.active { background: rgba(99,216,255,.09); border-color: rgba(99,216,255,.19); color: var(--text); }
+    .step.done .step-num { color: #04241c; border-color: transparent; background: var(--mint); }
+    .step-num {
+      width: 30px; height: 30px; display: grid; place-items: center; border-radius: 9px;
+      background: var(--panel-3); border: 1px solid var(--line); font-size: .78rem; font-weight: 900;
+    }
+    .step-name { display: block; font-weight: 750; font-size: .88rem; }
+    .step-sub { display: block; font-size: .72rem; color: var(--dim); margin-top: 1px; }
+    .step-state { width: 7px; height: 7px; border-radius: 50%; background: var(--line); }
+    .step.active .step-state { background: var(--cyan); box-shadow: 0 0 12px var(--cyan); }
+    .step.done .step-state { background: var(--mint); }
+    .sidebar-note { margin-top: 14px; padding: 12px; border-radius: 12px; background: #081522; color: var(--muted); font-size: .78rem; border: 1px solid var(--line); }
+    .sidebar-note strong { color: var(--amber); display: block; margin-bottom: 3px; }
+
+    .workspace { min-width: 0; border-radius: 22px; overflow: hidden; }
+    .workspace-head {
+      display: flex; justify-content: space-between; align-items: flex-start; gap: 24px;
+      padding: 22px 24px; border-bottom: 1px solid var(--line); background: linear-gradient(110deg, rgba(121,167,255,.06), transparent 50%);
+    }
+    .eyebrow { color: var(--cyan); font-size: .73rem; letter-spacing: .12em; font-weight: 900; text-transform: uppercase; }
+    .workspace-head h2 { margin: 5px 0 4px; font-size: clamp(1.35rem, 2.2vw, 2rem); letter-spacing: -.035em; line-height: 1.15; }
+    .workspace-head p { margin: 0; color: var(--muted); max-width: 720px; }
+    .mode-pill { white-space: nowrap; border: 1px solid rgba(61,224,181,.23); color: var(--mint); background: rgba(61,224,181,.07); border-radius: 99px; padding: 7px 11px; font-size: .75rem; font-weight: 800; }
+    .workspace-body { padding: 20px; }
+
+    .control-grid { display: grid; grid-template-columns: minmax(0,1.35fr) minmax(290px,.65fr); gap: 14px; }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 15px; padding: 16px; min-width: 0; }
+    .card-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 11px; }
+    .card-title h3 { font-size: .92rem; margin: 0; }
+    .tag { color: var(--muted); font-size: .72rem; border: 1px solid var(--line); background: rgba(255,255,255,.025); border-radius: 99px; padding: 4px 8px; }
+    textarea, input[type="text"], select {
+      width: 100%; color: var(--text); background: #071522; border: 1px solid var(--line); border-radius: 11px;
+    }
+    textarea { min-height: 165px; padding: 13px; resize: vertical; line-height: 1.55; }
+    input[type="text"], select { min-height: 43px; padding: 9px 11px; }
+    label { color: var(--muted); font-weight: 700; font-size: .82rem; display: block; margin-bottom: 6px; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+    .field { margin-bottom: 11px; }
+    .range-line { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; }
+    input[type="range"] { width: 100%; accent-color: var(--mint); }
+    .range-value { min-width: 38px; text-align: center; font: 800 .8rem ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--mint); }
+    .action-row { display: flex; gap: 9px; flex-wrap: wrap; margin-top: 12px; }
+    .microcopy { color: var(--dim); font-size: .76rem; margin: 8px 0 0; }
+
+    .flow-strip {
+      display: grid; grid-template-columns: repeat(8, minmax(88px, 1fr)); gap: 8px; margin: 14px 0;
+      overflow-x: auto; padding-bottom: 3px;
+    }
+    .flow-node {
+      position: relative; min-height: 66px; padding: 10px; border: 1px solid var(--line); border-radius: 12px;
+      background: #091827; color: var(--muted); cursor: pointer; text-align: left; transition: .25s ease;
+    }
+    .flow-node:not(:last-child)::after { content: "›"; position: absolute; right: -8px; top: 20px; color: var(--dim); z-index: 2; }
+    .flow-node span { display: block; color: var(--dim); font-size: .66rem; text-transform: uppercase; letter-spacing: .08em; }
+    .flow-node strong { display: block; font-size: .78rem; margin-top: 4px; }
+    .flow-node.active { border-color: rgba(99,216,255,.38); background: rgba(99,216,255,.09); color: var(--text); transform: translateY(-2px); }
+    .flow-node.done { border-color: rgba(61,224,181,.22); }
+    .flow-node.done span { color: var(--mint); }
+
+    .stage { border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: #071522; }
+    .stage-head { padding: 15px 17px; display: flex; justify-content: space-between; align-items: center; gap: 12px; border-bottom: 1px solid var(--line); }
+    .stage-head h3 { margin: 0; font-size: 1rem; }
+    .stage-head p { color: var(--muted); margin: 2px 0 0; font-size: .8rem; }
+    .stage-content { padding: 17px; min-height: 275px; }
+    .empty { min-height: 238px; display: grid; place-items: center; text-align: center; color: var(--dim); padding: 28px; }
+    .empty svg { width: 43px; height: 43px; opacity: .65; margin-bottom: 10px; }
+
+    .chunk-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px,1fr)); gap: 10px; }
+    .chunk { border: 1px solid var(--line); background: var(--panel); padding: 12px; border-radius: 12px; }
+    .chunk-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .chunk-id { color: var(--cyan); font: 800 .72rem ui-monospace, monospace; }
+    .chunk-meta { color: var(--dim); font-size: .68rem; }
+    .chunk p { margin: 0; color: #c7d7e6; font-size: .82rem; line-height: 1.5; }
+    .overlap { color: var(--amber); border-bottom: 1px dashed var(--amber); }
+
+    .vector-layout { display: grid; grid-template-columns: 1fr 240px; gap: 14px; }
+    .vector-list { display: grid; gap: 8px; }
+    .vector-row { display: grid; grid-template-columns: 56px 1fr; gap: 9px; align-items: center; }
+    .vector-label { color: var(--cyan); font: 800 .7rem ui-monospace, monospace; }
+    .vector-bars { display: grid; grid-template-columns: repeat(12,1fr); gap: 3px; height: 34px; align-items: center; }
+    .vector-bars i { display: block; border-radius: 3px; background: linear-gradient(180deg,var(--blue),var(--mint)); opacity: .78; min-height: 3px; }
+    canvas { width: 100%; height: 210px; display: block; background: #06121e; border-radius: 12px; border: 1px solid var(--line); }
+
+    .score-list { display: grid; gap: 9px; }
+    .score-card { border: 1px solid var(--line); border-radius: 12px; background: var(--panel); padding: 12px; }
+    .score-top { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; }
+    .score-title { font-size: .83rem; font-weight: 800; }
+    .score-num { color: var(--mint); font: 900 .85rem ui-monospace, monospace; }
+    .score-track { height: 6px; background: rgba(255,255,255,.07); border-radius: 99px; overflow: hidden; margin: 8px 0; }
+    .score-fill { height: 100%; background: linear-gradient(90deg,var(--blue),var(--mint)); border-radius: 99px; }
+    .score-reasons { display: flex; gap: 6px; flex-wrap: wrap; }
+    .reason { color: var(--muted); background: #071522; border-radius: 6px; padding: 3px 6px; font-size: .67rem; }
+    .rank { color: var(--amber); font-size: .7rem; font-weight: 900; margin-right: 6px; }
+
+    .prompt-box { background: #06121e; border: 1px solid rgba(121,167,255,.23); border-radius: 12px; overflow: hidden; }
+    .prompt-section { padding: 12px 14px; border-bottom: 1px solid var(--line); }
+    .prompt-section:last-child { border-bottom: 0; }
+    .prompt-label { color: var(--blue); font: 800 .68rem ui-monospace, monospace; letter-spacing: .08em; }
+    .prompt-section p { margin: 6px 0 0; color: #c8d7e7; font-size: .8rem; white-space: pre-wrap; }
+    .answer { color: #dbe9f5; }
+    .answer h4 { font-size: 1.02rem; margin: 0 0 10px; color: var(--text); }
+    .answer p { margin: 0 0 10px; }
+    .answer ul { margin: 8px 0 14px; padding-left: 21px; }
+    .answer li { margin-bottom: 6px; }
+    .citation { color: var(--cyan); background: rgba(99,216,255,.09); border: 1px solid rgba(99,216,255,.18); border-radius: 5px; padding: 1px 5px; font-size: .72rem; font-weight: 800; }
+    .guard-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 14px; }
+    .guard { padding: 11px; border: 1px solid var(--line); border-radius: 11px; background: var(--panel); }
+    .guard strong { display: block; font-size: .78rem; }
+    .guard span { color: var(--muted); font-size: .72rem; }
+    .pass { color: var(--mint); }
+    .warn { color: var(--amber); }
+
+    .learn-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 12px; margin-top: 14px; }
+    .learn-card { border-radius: 14px; padding: 15px; border: 1px solid var(--line); background: rgba(16,34,53,.65); }
+    .learn-card h3 { margin: 0 0 6px; font-size: .9rem; }
+    .learn-card p { margin: 0; color: var(--muted); font-size: .82rem; }
+    .formula { margin-top: 10px; padding: 9px 11px; background: #06121e; border-radius: 9px; color: var(--cyan); font: .76rem ui-monospace, SFMono-Regular, Menlo, monospace; overflow-x: auto; }
+    .mistake { border-left: 3px solid var(--amber); }
+    .mistake h3 { color: var(--amber); }
+    .footer-note { color: var(--dim); font-size: .76rem; text-align: center; padding: 17px 8px 0; }
+    .toast { position: fixed; right: 20px; bottom: 20px; z-index: 10; background: #173149; border: 1px solid rgba(99,216,255,.25); border-radius: 11px; padding: 11px 14px; box-shadow: var(--shadow); transform: translateY(120px); opacity: 0; transition: .3s ease; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    @media (max-width: 1050px) {
+      .app-grid { grid-template-columns: 1fr; }
+      .sidebar { position: static; overflow-x: auto; }
+      .steps { grid-template-columns: repeat(8, 145px); }
+      .sidebar-note, .side-label { display: none; }
+      .control-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 720px) {
+      .shell { width: min(100% - 18px, 1520px); padding-top: 12px; }
+      .topbar { align-items: flex-start; }
+      .brand p, .top-actions .ghost { display: none; }
+      .workspace-head { padding: 18px; flex-direction: column; gap: 10px; }
+      .workspace-body { padding: 12px; }
+      .field-row, .learn-grid, .vector-layout { grid-template-columns: 1fr; }
+      .guard-grid { grid-template-columns: 1fr; }
+      .flow-strip { grid-template-columns: repeat(8, 112px); }
+      .btn { min-height: 45px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none"><path d="M7 7h12a5 5 0 0 1 0 10h-7" stroke="#3de0b5" stroke-width="2.8" stroke-linecap="round"/><path d="m14 13-5 5 5 5" stroke="#79a7ff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div><h1>RAG Learning Lab</h1><p>From raw documents to grounded answers</p></div>
+      </div>
+      <div class="top-actions">
+        <button class="btn ghost" id="resetBtn">Reset</button>
+        <button class="btn primary" id="tourBtn">▶ Run guided pipeline</button>
+      </div>
+    </header>
+
+    <div class="progress-wrap" aria-label="Pipeline progress">
+      <span>Pipeline progress</span><div class="progress-track"><div class="progress-fill" id="progressFill"></div></div><span id="progressText">0 / 8</span>
+    </div>
+
+    <main class="app-grid">
+      <aside class="sidebar">
+        <div class="side-label">RAG pipeline</div>
+        <nav class="steps" id="stepNav" aria-label="RAG stages"></nav>
+        <div class="sidebar-note"><strong>Simulation, not an AI model</strong>The lab runs locally and uses transparent scoring approximations. Production RAG uses trained embedding and generation models.</div>
+      </aside>
+
+      <section class="workspace">
+        <div class="workspace-head">
+          <div><div class="eyebrow" id="stageEyebrow">Stage 1 of 8</div><h2 id="stageTitle">Prepare the knowledge</h2><p id="stageSubtitle">RAG begins with trusted source documents, not with the language model.</p></div>
+          <span class="mode-pill">Offline learning simulator</span>
+        </div>
+
+        <div class="workspace-body">
+          <div class="control-grid">
+            <div class="card">
+              <div class="card-title"><h3>Knowledge documents</h3><span class="tag" id="docCount">3 documents</span></div>
+              <textarea id="documents" aria-label="Knowledge documents"></textarea>
+              <p class="microcopy">Separate documents with a blank line and <strong>---</strong>. Try replacing the sample content with your own SOP or policy text.</p>
+              <div class="action-row"><button class="btn small" id="sampleBtn">Load RCA sample</button><button class="btn small primary" id="indexBtn">Create index</button></div>
+            </div>
+            <div class="card">
+              <div class="card-title"><h3>Index settings</h3><span class="tag">Adjust & compare</span></div>
+              <div class="field"><label for="chunkSize">Chunk size (words)</label><div class="range-line"><input id="chunkSize" type="range" min="22" max="70" value="42"><output class="range-value" id="chunkSizeOut">42</output></div></div>
+              <div class="field"><label for="overlap">Chunk overlap (words)</label><div class="range-line"><input id="overlap" type="range" min="0" max="15" value="7"><output class="range-value" id="overlapOut">7</output></div></div>
+              <div class="field-row">
+                <div class="field"><label for="searchMode">Retrieval method</label><select id="searchMode"><option value="hybrid">Hybrid</option><option value="semantic">Semantic</option><option value="sparse">Sparse / keyword</option></select></div>
+                <div class="field"><label for="topK">Retrieve top K</label><select id="topK"><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div>
+              </div>
+              <div class="field"><label for="hybridWeight">Semantic weight in hybrid search</label><div class="range-line"><input id="hybridWeight" type="range" min="0" max="100" value="65"><output class="range-value" id="hybridWeightOut">65%</output></div></div>
+              <p class="microcopy">Smaller chunks are precise; larger chunks preserve context. Overlap protects meaning at chunk boundaries.</p>
+            </div>
+          </div>
+
+          <div class="flow-strip" id="flowStrip" aria-label="Pipeline overview"></div>
+
+          <section class="stage" aria-live="polite">
+            <div class="stage-head"><div><h3 id="outputTitle">Source inspection</h3><p id="outputSubtitle">Check whether the knowledge is usable and trustworthy.</p></div><button class="btn small" id="nextBtn">Next stage →</button></div>
+            <div class="stage-content" id="stageContent"></div>
+          </section>
+
+          <div class="learn-grid">
+            <div class="learn-card"><h3 id="learnTitle">Why this stage matters</h3><p id="learnText"></p><div class="formula" id="formula"></div></div>
+            <div class="learn-card mistake"><h3>Common failure</h3><p id="mistakeText"></p></div>
+          </div>
+          <p class="footer-note">Everything runs in your browser. No document or question is uploaded.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+
+  <script>
+    const SAMPLE = `Document: SOP-QA-017 — Human Error Assessment\nBefore assigning human error as a root cause, the investigation team must verify that the procedure was clear, current and accessible; the employee was trained and qualified; equipment and materials performed as intended; and workplace or system conditions did not make the error likely. Training alone is not an acceptable CAPA unless a demonstrated knowledge or skill gap caused the event.\n\n---\n\nDocument: RCA Standard — Evidence and Cause Validation\nA possible cause becomes a validated root cause only when objective evidence supports the causal relationship. Investigators should reproduce the failure where feasible, compare event and non-event conditions, test competing hypotheses and document why alternative causes were excluded. The root cause should explain the observed problem and its extent.\n\n---\n\nDocument: CAPA Effectiveness Policy\nCorrective actions must address the validated root cause rather than the symptom. Each CAPA requires an owner, due date and effectiveness measure. Effectiveness checks should use a defined observation period and confirm that recurrence has been reduced without creating a new risk. Relevant past deviations, complaints and CAPAs should be reviewed for recurrence and systemic patterns.`;
+
+    const steps = [
+      {name:'Sources', sub:'trusted knowledge', title:'Prepare the knowledge', subtitle:'RAG begins with trusted source documents, not with the language model.', out:'Source inspection', outSub:'Check whether the knowledge is usable and trustworthy.', learn:'RAG can use private, public, current or domain-specific knowledge. Source quality, permissions and metadata determine whether later answers can be trusted.', formula:'Useful answer ≤ quality of indexed evidence', mistake:'Indexing obsolete, duplicated or access-restricted documents without version and permission metadata.'},
+      {name:'Chunking', sub:'split + overlap', title:'Split documents into chunks', subtitle:'Create retrieval-sized passages while preserving enough surrounding meaning.', out:'Chunk explorer', outSub:'See exactly what enters the retrieval index.', learn:'Whole documents are often too large and too broad to retrieve well. Chunk size changes the balance between precision and context; overlap protects sentences near boundaries.', formula:'chunks = slidingWindow(words, size, size − overlap)', mistake:'Using one chunk size for every document type, or splitting tables and procedures without respecting their structure.'},
+      {name:'Embeddings', sub:'meaning → numbers', title:'Represent meaning numerically', subtitle:'An embedding maps each chunk into a position in a multidimensional meaning space.', out:'Embedding vectors', outSub:'The bars represent dimensions—not human-readable topics.', learn:'Chunks with related meaning should have nearby vectors even when their exact words differ. Real embedding models may produce hundreds or thousands of dimensions.', formula:'embedding(chunk) → [0.18, −0.42, 0.77, …]', mistake:'Assuming an embedding stores or summarizes the text. It is a numerical representation used for similarity.'},
+      {name:'Vector store', sub:'vectors + metadata', title:'Build the searchable index', subtitle:'Store vectors together with original text, source identity and permissions.', out:'Vector database map', outSub:'Nearby points represent chunks with similar simulated meaning.', learn:'A vector database supports fast nearest-neighbor lookup. Metadata enables filtering by source, date, department, product, access level or document version.', formula:'record = { vector, chunk text, source, metadata }', mistake:'Storing vectors without source metadata, access control, or a reliable link back to the original evidence.'},
+      {name:'Query', sub:'capture intent', title:'Understand the user question', subtitle:'Normalize the query and represent its intent for retrieval.', out:'Query preparation', outSub:'Inspect the concepts the simulator detected.', learn:'The query may be embedded for semantic search and tokenized for sparse search. Production systems may also rewrite ambiguous questions or apply metadata filters.', formula:'query → tokens + query embedding + filters', mistake:'Retrieving against a vague question without clarifying scope, time period, product or desired evidence.'},
+      {name:'Retrieve', sub:'semantic + sparse', title:'Retrieve candidate evidence', subtitle:'Compare semantic, sparse and hybrid search, then select the top K chunks.', out:'Retrieval scores', outSub:'See why each passage was ranked.', learn:'Semantic search captures related meaning. Sparse search rewards exact keywords. Hybrid search combines both and is often robust for enterprise terms, IDs and natural-language questions.', formula:'hybrid = α × semantic + (1 − α) × sparse', mistake:'Treating the first retrieved result as correct, or setting top K so low that key evidence is missed.'},
+      {name:'Rerank', sub:'best evidence first', title:'Rerank and assemble context', subtitle:'Apply a stronger relevance check and prepare a bounded evidence package.', out:'Reranked context', outSub:'The strongest, non-duplicative evidence moves to the top.', learn:'Initial retrieval is optimized for speed. A reranker can assess query–passage relevance more carefully, remove redundancy and fit the best evidence into the model context window.', formula:'final rank = relevance + evidence quality − redundancy', mistake:'Sending every retrieved chunk to the LLM, creating noise, conflicting evidence and unnecessary cost.'},
+      {name:'Generate', sub:'answer + citations', title:'Generate a grounded answer', subtitle:'The LLM receives instructions, the question and retrieved evidence—then produces a cited response.', out:'Grounded response', outSub:'Answer claims should trace back to retrieved evidence.', learn:'Retrieval supplies evidence; the language model composes the answer. Citations and grounding checks help users verify claims. RAG reduces hallucination risk but cannot eliminate it.', formula:'answer = LLM(instructions + question + retrieved context)', mistake:'Allowing the model to answer beyond the supplied evidence without clearly saying that information is unavailable.'}
+    ];
+
+    const conceptGroups = {
+      human:['human','operator','employee','personnel','people'], error:['error','mistake','failure','deviation'], evidence:['evidence','verify','objective','demonstrate','support','validate','confirmed'],
+      training:['training','trained','qualified','skill','knowledge'], procedure:['procedure','sop','instruction','current','accessible'], equipment:['equipment','machine','system','materials'],
+      cause:['cause','causal','root','hypothesis'], action:['capa','corrective','action','owner','due'], effectiveness:['effectiveness','recurrence','measure','observation'], history:['past','previous','complaints','patterns']
+    };
+
+    const state = { current:0, completed:new Set(), docs:[], chunks:[], vectors:[], query:'What evidence is required before assigning human error as the root cause?', results:[], reranked:[], touring:false };
+    const $ = id => document.getElementById(id);
+    const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+    const tokenize = s => s.toLowerCase().replace(/[^a-z0-9-]+/g,' ').split(/\s+/).filter(w => w.length > 2);
+    const unique = a => [...new Set(a)];
+    const clamp = (n,a=0,b=1) => Math.max(a,Math.min(b,n));
+    const hash = s => { let h=2166136261; for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)} return h>>>0; };
+    const seeded = seed => { let x=seed||1; return () => ((x=Math.imul(1664525,x)+1013904223>>>0)/4294967296); };
+
+    function concepts(text){
+      const words = new Set(tokenize(text));
+      return Object.entries(conceptGroups).filter(([,terms]) => terms.some(t=>words.has(t))).map(([k])=>k);
+    }
+    function embedding(text){
+      const v = Array(12).fill(0); const cs=concepts(text); const words=unique(tokenize(text));
+      cs.forEach(c=>{const rnd=seeded(hash(c));v.forEach((_,i)=>v[i]+=(rnd()-.35)*1.7)});
+      words.forEach(w=>{const rnd=seeded(hash(w));v.forEach((_,i)=>v[i]+=(rnd()-.5)*.12)});
+      const norm=Math.sqrt(v.reduce((s,n)=>s+n*n,0))||1; return v.map(n=>n/norm);
+    }
+    function cosine(a,b){return a.reduce((s,n,i)=>s+n*b[i],0)}
+    function parseDocs(){
+      return $('documents').value.split(/\n\s*---\s*\n/).map((raw,i)=>{const lines=raw.trim().split('\n');const first=lines.shift()||`Document ${i+1}`;return {id:`D${i+1}`,title:first.replace(/^Document:\s*/i,''),text:lines.join(' ').trim()}}).filter(d=>d.text);
+    }
+    function makeChunks(){
+      state.docs=parseDocs(); state.chunks=[]; const size=+$('chunkSize').value, overlap=+$('overlap').value, stride=Math.max(1,size-overlap);
+      state.docs.forEach(doc=>{const words=doc.text.split(/\s+/);let n=0;for(let start=0;start<words.length;start+=stride){const part=words.slice(start,start+size);if(!part.length)break;state.chunks.push({id:`${doc.id}-C${++n}`,docId:doc.id,title:doc.title,text:part.join(' '),start,end:start+part.length,overlap:start?Math.min(overlap,part.length):0});if(start+size>=words.length)break;}});
+      state.vectors=state.chunks.map(c=>embedding(c.text)); $('docCount').textContent=`${state.docs.length} document${state.docs.length===1?'':'s'}`;
+    }
+    function scoreResults(){
+      if(!state.chunks.length)makeChunks(); const qTokens=unique(tokenize(state.query)), qConcepts=concepts(state.query), qVec=embedding(state.query); const mode=$('searchMode').value, alpha=+$('hybridWeight').value/100;
+      state.results=state.chunks.map((c,i)=>{
+        const ct=tokenize(c.text), exact=qTokens.filter(t=>ct.includes(t));
+        const sparse=clamp(exact.reduce((s,t)=>s+1/Math.max(1,state.chunks.filter(x=>tokenize(x.text).includes(t)).length),0)/Math.max(1,qTokens.length*.45));
+        const cc=concepts(c.text), shared=qConcepts.filter(x=>cc.includes(x));
+        const sem=clamp((cosine(qVec,state.vectors[i])+1)/2*.55 + shared.length/Math.max(1,qConcepts.length)*.45);
+        const score=mode==='semantic'?sem:mode==='sparse'?sparse:alpha*sem+(1-alpha)*sparse;
+        return {...c,index:i,sparse,sem,score,exact,shared};
+      }).sort((a,b)=>b.score-a.score).slice(0,+$('topK').value);
+      state.reranked=[...state.results].map(r=>({...r,rerank:clamp(r.score*.72 + (r.shared.includes('evidence') ? .13 : 0) + (r.shared.includes('human') ? .08 : 0) + (r.text.length>120 ? .04 : 0))})).sort((a,b)=>b.rerank-a.rerank);
+    }
+
+    function nav(){
+      $('stepNav').innerHTML=steps.map((s,i)=>`<button class="step ${i===state.current?'active':''} ${state.completed.has(i)?'done':''}" data-step="${i}"><span class="step-num">${state.completed.has(i)?'✓':i+1}</span><span><span class="step-name">${s.name}</span><span class="step-sub">${s.sub}</span></span><span class="step-state"></span></button>`).join('');
+      $('flowStrip').innerHTML=steps.map((s,i)=>`<button class="flow-node ${i===state.current?'active':''} ${state.completed.has(i)?'done':''}" data-step="${i}"><span>${String(i+1).padStart(2,'0')}</span><strong>${s.name}</strong></button>`).join('');
+      document.querySelectorAll('[data-step]').forEach(b=>b.onclick=()=>go(+b.dataset.step));
+      $('progressFill').style.width=`${state.completed.size/8*100}%`; $('progressText').textContent=`${state.completed.size} / 8`;
+    }
+    function go(i){state.current=clamp(i,0,7);render();}
+    function complete(i){state.completed.add(i);nav();}
+    function render(){
+      const s=steps[state.current]; $('stageEyebrow').textContent=`Stage ${state.current+1} of 8`; $('stageTitle').textContent=s.title;$('stageSubtitle').textContent=s.subtitle;
+      $('outputTitle').textContent=s.out;$('outputSubtitle').textContent=s.outSub;$('learnText').textContent=s.learn;$('formula').textContent=s.formula;$('mistakeText').textContent=s.mistake;
+      $('nextBtn').textContent=state.current===7?'Start again ↻':'Next stage →'; nav(); renderStage();
+    }
+    function empty(msg){return `<div class="empty"><div><svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="19" stroke="currentColor"/><path d="M16 24h16M24 16v16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><div>${msg}</div></div></div>`}
+    function renderStage(){
+      const c=$('stageContent');
+      if(state.current===0){
+        const docs=parseDocs(); c.innerHTML=`<div class="chunk-grid">${docs.map(d=>`<article class="chunk"><div class="chunk-top"><span class="chunk-id">${esc(d.id)}</span><span class="chunk-meta">${d.text.split(/\s+/).length} words</span></div><p><strong>${esc(d.title)}</strong></p><p>${esc(d.text.slice(0,180))}${d.text.length>180?'…':''}</p></article>`).join('')}</div>`; complete(0);
+      } else if(state.current===1){
+        if(!state.chunks.length)makeChunks(); c.innerHTML=`<div class="chunk-grid">${state.chunks.map(x=>`<article class="chunk"><div class="chunk-top"><span class="chunk-id">${x.id}</span><span class="chunk-meta">${x.text.split(/\s+/).length} words · ${x.title}</span></div><p>${x.overlap?`<span class="overlap" title="Repeated from the previous chunk">${esc(x.text.split(/\s+/).slice(0,x.overlap).join(' '))}</span> `:''}${esc(x.text.split(/\s+/).slice(x.overlap).join(' '))}</p></article>`).join('')}</div>`; complete(1);
+      } else if(state.current===2){
+        if(!state.vectors.length)makeChunks(); c.innerHTML=`<div class="vector-list">${state.vectors.map((v,i)=>`<div class="vector-row"><span class="vector-label">${state.chunks[i].id}</span><div class="vector-bars" title="[${v.map(n=>n.toFixed(2)).join(', ')}]">${v.map(n=>`<i style="height:${Math.max(3,Math.abs(n)*70)}%;opacity:${n<0 ? .38 : .9}"></i>`).join('')}</div></div>`).join('')}</div><p class="microcopy">Hover over a vector to see its 12 simulated dimensions. Faded bars represent negative values.</p>`;complete(2);
+      } else if(state.current===3){
+        if(!state.vectors.length)makeChunks();c.innerHTML=`<div class="vector-layout"><div><canvas id="map" width="800" height="420" aria-label="Simulated vector map"></canvas></div><div class="card"><h3 style="margin-top:0">Each stored record</h3><p class="microcopy">✓ embedding vector<br>✓ original chunk text<br>✓ document name<br>✓ chunk ID<br>✓ access/version metadata</p><p class="microcopy">The 2D map is a projection for learning. A real vector space has many more dimensions.</p></div></div>`; drawMap();complete(3);
+      } else if(state.current===4){
+        c.innerHTML=`<div class="card"><label for="question">Ask the knowledge base</label><input type="text" id="question" value="${esc(state.query)}"><div class="action-row"><button class="btn small primary" id="prepareQuery">Prepare query</button></div><div id="queryAnalysis" style="margin-top:13px"></div></div>`;
+        $('prepareQuery').onclick=()=>{state.query=$('question').value.trim();const cs=concepts(state.query);$('queryAnalysis').innerHTML=`<div class="prompt-box"><div class="prompt-section"><span class="prompt-label">TOKENS</span><p>${esc(unique(tokenize(state.query)).join(' · '))}</p></div><div class="prompt-section"><span class="prompt-label">DETECTED CONCEPTS</span><p>${esc(cs.join(' · ')||'No mapped concepts')}</p></div><div class="prompt-section"><span class="prompt-label">QUERY VECTOR</span><p>[${embedding(state.query).map(n=>n.toFixed(2)).join(', ')}]</p></div></div>`;complete(4)};
+        setTimeout(()=>$('prepareQuery').click(),0);
+      } else if(state.current===5){
+        scoreResults(); c.innerHTML=`<div class="score-list">${state.results.map((r,i)=>scoreCard(r,i,false)).join('')}</div>`;complete(5);
+      } else if(state.current===6){
+        scoreResults();c.innerHTML=`<div class="score-list">${state.reranked.map((r,i)=>scoreCard(r,i,true)).join('')}</div><div class="prompt-box" style="margin-top:13px"><div class="prompt-section"><span class="prompt-label">ASSEMBLED CONTEXT</span><p>${state.reranked.map((r,i)=>`[${i+1}] ${esc(r.text)}`).join('\n\n')}</p></div></div>`;complete(6);
+      } else {
+        scoreResults(); const sources=state.reranked.slice(0,3); const hasHuman=sources.some(r=>r.shared.includes('human')); const hasEvidence=sources.some(r=>r.shared.includes('evidence')); const avg=sources.reduce((s,r)=>s+r.rerank,0)/Math.max(1,sources.length);
+        c.innerHTML=`<div class="answer"><h4>Evidence required before assigning human error</h4><p>Human error should be assigned only after the investigation verifies that the surrounding system did not make the event likely. The available evidence supports checking:</p><ul><li>whether the procedure was clear, current and accessible;</li><li>whether the employee was trained and qualified;</li><li>whether equipment and materials performed as intended; and</li><li>whether workplace or system conditions contributed to the event. <span class="citation">[1]</span></li></ul><p>The team should also demonstrate the causal relationship with objective evidence, test competing hypotheses and document why alternative causes were excluded. <span class="citation">[2]</span> Training alone is not an appropriate CAPA unless a demonstrated knowledge or skill gap caused the event. <span class="citation">[1]</span></p><div class="guard-grid"><div class="guard"><strong class="${hasHuman&&hasEvidence?'pass':'warn'}">${hasHuman&&hasEvidence?'✓':'!'} Evidence coverage</strong><span>${hasHuman&&hasEvidence?'Key concepts found':'Evidence may be incomplete'}</span></div><div class="guard"><strong class="${avg>.55?'pass':'warn'}">${avg>.55?'✓':'!'} Retrieval confidence</strong><span>${Math.round(avg*100)}% simulated relevance</span></div><div class="guard"><strong class="pass">✓ Citations attached</strong><span>Claims link to retrieved chunks</span></div></div><div class="prompt-box" style="margin-top:14px">${sources.slice(0,2).map((r,i)=>`<div class="prompt-section"><span class="prompt-label">[${i+1}] ${esc(r.id)} · ${esc(r.title)}</span><p>${esc(r.text)}</p></div>`).join('')}</div></div>`;complete(7);
+      }
+    }
+    function scoreCard(r,i,rerank){const score=rerank?r.rerank:r.score;return `<article class="score-card"><div class="score-top"><div class="score-title"><span class="rank">#${i+1}</span>${esc(r.id)} · ${esc(r.title)}</div><span class="score-num">${Math.round(score*100)}%</span></div><div class="score-track"><div class="score-fill" style="width:${score*100}%"></div></div><div class="score-reasons"><span class="reason">semantic ${Math.round(r.sem*100)}%</span><span class="reason">sparse ${Math.round(r.sparse*100)}%</span>${r.shared.slice(0,4).map(x=>`<span class="reason">concept: ${esc(x)}</span>`).join('')}${rerank?'<span class="reason">evidence reranked</span>':''}</div><p class="microcopy">${esc(r.text.slice(0,210))}${r.text.length>210?'…':''}</p></article>`}
+    function drawMap(){const canvas=$('map');if(!canvas)return;const ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);ctx.strokeStyle='rgba(140,180,210,.11)';ctx.lineWidth=1;for(let x=80;x<w;x+=80){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}for(let y=60;y<h;y+=60){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}state.vectors.forEach((v,i)=>{const x=55+(v[0]+1)/2*(w-110),y=45+(v[1]+1)/2*(h-90);ctx.beginPath();ctx.arc(x,y,10,0,Math.PI*2);ctx.fillStyle=i%3===0?'#3de0b5':i%3===1?'#63d8ff':'#79a7ff';ctx.shadowColor=ctx.fillStyle;ctx.shadowBlur=13;ctx.fill();ctx.shadowBlur=0;ctx.fillStyle='#dcecff';ctx.font='bold 18px system-ui';ctx.fillText(state.chunks[i].id,x+15,y+6)});}
+    function notify(msg){$('toast').textContent=msg;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1800)}
+    async function tour(){if(state.touring)return;state.touring=true;$('tourBtn').disabled=true;makeChunks();for(let i=0;i<8;i++){go(i);await new Promise(r=>setTimeout(r,i===7?300:820));}state.touring=false;$('tourBtn').disabled=false;notify('Pipeline complete — inspect any stage')}
+
+    $('documents').value=SAMPLE;
+    ['chunkSize','overlap','hybridWeight'].forEach(id=>{$(id).oninput=()=>{$(id+'Out').textContent=$(id).value+(id==='hybridWeight'?'%':'');if(id!=='hybridWeight'){state.chunks=[];state.vectors=[];state.completed=new Set([...state.completed].filter(x=>x<1));}renderStage()}});
+    $('sampleBtn').onclick=()=>{$('documents').value=SAMPLE;state.chunks=[];state.vectors=[];renderStage();notify('RCA sample restored')};
+    $('indexBtn').onclick=()=>{makeChunks();[0,1,2,3].forEach(i=>state.completed.add(i));go(1);notify(`${state.chunks.length} chunks indexed`)};
+    $('searchMode').onchange=()=>{if(state.current>=5)renderStage()};$('topK').onchange=()=>{if(state.current>=5)renderStage()};
+    $('nextBtn').onclick=()=>go(state.current===7?0:state.current+1);$('tourBtn').onclick=tour;
+    $('resetBtn').onclick=()=>{state.completed.clear();state.chunks=[];state.vectors=[];state.results=[];state.current=0;$('documents').value=SAMPLE;render();notify('Simulator reset')};
+    render();
+  </script>
+</body>
+</html>
